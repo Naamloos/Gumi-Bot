@@ -17,7 +17,7 @@ namespace Gumi
             {
                 File.Create("token.txt").Close();
             }
-            if(File.ReadAllText("token.txt") == "")
+            if (File.ReadAllText("token.txt") == "")
             {
                 Console.WriteLine("Please enter your bot's token in token.txt.");
                 Console.WriteLine("\nPress any key to exit...");
@@ -49,26 +49,27 @@ namespace Gumi
                 if (e.Message.Content.StartsWith(prefix))
                 {
                     string command = e.Message.Content.Substring(prefix.Length);
-                    if(command == "ping")
+                    if (command == "ping")
                     {
                         await e.Message.Respond("pong!");
                     }
-                    else if(command == "pong")
+                    else if (command == "pong")
                     {
                         await e.Message.Respond("ping!");
-                    }else if(command == "info")
+                    }
+                    else if (command == "info")
                     {
                         DiscordEmbed embed = new DiscordEmbed()
                         {
                             Title = "Gumi on Github",
-                            Description = "Gumi is a Discord bot written in C#,\nRunning DSharpPlus rewrite.",
+                            Description = "Gumi is a Discord bot written in C#,\nRunning DSharpPlus.",
                             Author = new DiscordEmbedAuthor()
                             {
                                 Name = "Written by Naamloos",
                                 Url = "https://www.discord.gg/0oZpaYcAjfvkDuE4",
                                 IconUrl = "https://cdn.discordapp.com/attachments/146044397861994496/264049233487724545/127408598010560513.png"
                             },
-                            Color = 1,
+                            Color = 65430,
                             Url = "https://github.com/NaamloosDT/Gumi-Bot",
                             Thumbnail = new DiscordEmbedThumbnail()
                             {
