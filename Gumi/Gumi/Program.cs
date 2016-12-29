@@ -56,6 +56,26 @@ namespace Gumi
                     else if(command == "pong")
                     {
                         await e.Message.Respond("ping!");
+                    }else if(command == "info")
+                    {
+                        DiscordEmbed embed = new DiscordEmbed()
+                        {
+                            Title = "Gumi on Github",
+                            Description = "Gumi is a Discord bot written in C#,\nRunning DSharpPlus rewrite.",
+                            Author = new DiscordEmbedAuthor()
+                            {
+                                Name = "Written by Naamloos",
+                                Url = "https://www.discord.gg/0oZpaYcAjfvkDuE4",
+                                IconUrl = "https://cdn.discordapp.com/attachments/146044397861994496/264049233487724545/127408598010560513.png"
+                            },
+                            Color = 1,
+                            Url = "https://github.com/NaamloosDT/Gumi-Bot",
+                            Thumbnail = new DiscordEmbedThumbnail()
+                            {
+                                Url = _client.Me.AvatarUrl
+                            }
+                        };
+                        await e.Message.Respond("", embed: embed);
                     }
                 }
             };
