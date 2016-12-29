@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using Gumi.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,6 +26,11 @@ namespace Gumi
                 return;
             }
 
+            if (!File.Exists("tags.json"))
+            {
+                File.Create("tags.json").Close();
+            }
+
             string token = File.ReadAllText("token.txt");
 
             DiscordClient _client = new DiscordClient(new DiscordConfig()
@@ -41,11 +47,13 @@ namespace Gumi
             _client.Ready += async (sender, e) =>
             {
                 await _client.UpdateStatus("💕 " + prefix + "help 💕");
-                _client.DebugLogger.LogMessage(LogLevel.Info, "Gumi", "Ready!", DateTime.UtcNow);
+                _client.DebugLogger.LogMessage(LogLevel.Debug, "Gumi-Debug", "Ready!", DateTime.UtcNow);
             };
 
             _client.MessageCreated += async (sender, e) =>
             {
+                _client.DebugLogger.LogMessage(LogLevel.Info, "Gumi-Chat", e.Message.Author.Username + "#" + e.Message.Author.Discriminator + "@" + e.Guild.Name + "#"
+                    + e.Channel.Name + ": " + e.Message.Content, DateTime.UtcNow);
                 if (e.Message.Content.StartsWith(prefix))
                 {
                     string command = e.Message.Content.Substring(prefix.Length);
@@ -77,6 +85,32 @@ namespace Gumi
                             }
                         };
                         await e.Message.Respond("", embed: embed);
+                    }
+                    else if (command.StartsWith("tag "))
+                    {
+                        string name = command.Substring(4);
+                        if(name.StartsWith("create "))
+                        {
+                            string newname = name.Substring(7).Split(' ')[0];
+                            string text = name.Substring(7 + newname.Length + 1);
+                            Tag.Create(e.Message.Author.ID, e.Guild.ID, newname, text);
+                            await e.Message.Respond("Tag created! (" + newname + ").");
+                        }else
+                        {
+                            Tag t = Helpers.Tag.Get(name);
+                            DiscordUser owner = await _client.GetUser(t.owner.ToString());
+                            DiscordEmbed embed = new DiscordEmbed()
+                            {
+                                Title = "**Tag name: " + t.name + "**",
+                                Description = t.text,
+                                Author = new DiscordEmbedAuthor()
+                                {
+                                    Name = owner.Username + "#" + owner.Discriminator,
+                                    IconUrl = owner.AvatarUrl
+                                }
+                            };
+                            await e.Message.Respond("", embed: embed);
+                        }
                     }
                 }
             };
