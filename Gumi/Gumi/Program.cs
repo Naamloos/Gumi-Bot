@@ -29,6 +29,7 @@ namespace Gumi
             if (!File.Exists("tags.json"))
             {
                 File.Create("tags.json").Close();
+                File.WriteAllText("tags.json", "{ }");
             }
 
             string token = File.ReadAllText("token.txt");
