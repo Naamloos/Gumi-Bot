@@ -12,8 +12,19 @@ namespace Gumi
     class Program
     {
         public static string prefix = "||";
+        public static List<string> blacklist;
         static void Main(string[] args)
         {
+            // These commands shouldn't get tags.
+            blacklist = new List<string>()
+            {
+                "ping",
+                "pong",
+                "tag",
+                "info",
+                "guild"
+            };
+
             if (!File.Exists("token.txt"))
             {
                 File.Create("token.txt").Close();
@@ -87,6 +98,36 @@ namespace Gumi
                         };
                         await e.Message.Respond("", embed: embed);
                     }
+                    else if (command == "guild")
+                    {
+                        DiscordGuild g = e.Guild;
+                        DiscordUser o = await _client.GetUser(e.Guild.OwnerID.ToString());
+                        string info = "**Guild info for *\"" + g.Name + "\"*.**";
+                        info += "\n```";
+                        info += "\nChannel count: " + g.Channels.Count;
+                        info += "\nMember count: " + g.MemberCount;
+                        info += "\nCreated: " + g.CreationDate.ToString();
+                        info += "\nAmount of custom emojis: " + g.Emojis.Count;
+                        info += "\nMy join date: " + g.JoinedAt.ToString();
+                        info += "\nRole count: " + g.Roles.Count;
+                        info += "\nGuild owner: " + o.Username + "#" + o.Discriminator;
+                        info += "\nGuild owner ID: " + o.ID;
+                        info += "\n```";
+                        info += "\nIcon URL: " + g.IconUrl;
+                        await e.Message.Respond(info);
+                    }
+                    else if (command == "tag")
+                    {
+                        string tags = "**List of tags:**\n```";
+                        foreach (string tag in Tag.List())
+                        {
+                            tags += tag + ", ";
+                        }
+                        tags += "```";
+                        await e.Message.Respond("Sent a DM with all tags!");
+                        DiscordChannel dm = await _client.CreateDM(e.Message.Author.ID);
+                        await dm.SendMessage(tags);
+                    }
                     else if (command.StartsWith("tag "))
                     {
                         // I call this: if-statement frankenstein!
@@ -95,49 +136,65 @@ namespace Gumi
                         {
                             if (name.Length > 7)
                             {
-                                string newname = name.Substring(7).Split(' ')[0];
+                                string newname = name.Substring(7).Split(' ')[0].ToLower();
                                 if (name.Substring(7 + newname.Length) != "")
                                 {
                                     string text = name.Substring(7 + newname.Length + 1);
-                                    if (Tag.Create(e.Message.Author.ID, e.Guild.ID, newname, text))
+                                    string attachment = "";
+                                    if (e.Message.Attachments.Count > 0)
+                                    {
+                                        attachment = e.Message.Attachments.First().Url;
+                                    }
+                                    if (Tag.Create(e.Message.Author.ID, e.Guild.ID, newname, text, attachment))
                                     {
                                         await e.Message.Respond("Tag created! (" + newname + ").");
+                                        _client.DebugLogger.LogMessage(LogLevel.Info, "Gumi-Chat", "Created a tag: " + newname, DateTime.UtcNow);
                                     }
                                     else
                                     {
                                         await e.Message.Respond("Tag already exists! (" + newname + ").");
                                     }
-                                }else
+                                }
+                                else
                                 {
                                     await e.Message.Respond("Invalid arguments!");
                                 }
-                            }else
+                            }
+                            else
                             {
                                 await e.Message.Respond("Invalid arguments!");
                             }
                         }
-                        else
+                        else if (name.StartsWith("delete "))
                         {
-                            Tag t = Helpers.Tag.Get(name);
-                            if (t.exists)
-                            {
-                                DiscordUser owner = await _client.GetUser(t.owner.ToString());
-                                DiscordEmbed embed = new DiscordEmbed()
-                                {
-                                    Title = "**Tag name: " + t.name + "**",
-                                    Description = t.text,
-                                    Author = new DiscordEmbedAuthor()
-                                    {
-                                        Name = owner.Username + "#" + owner.Discriminator,
-                                        IconUrl = owner.AvatarUrl
-                                    }
-                                };
-                                await e.Message.Respond("", embed: embed);
-                            }
+                            string deletename = name.Substring(7);
+                            if (Tag.Remove(deletename, e.Message.Author.ID))
+                                await e.Message.Respond("Deleted tag: " + deletename);
                             else
+                                await e.Message.Respond("Can't delete tag \"" + deletename + "\", it either doesn't exist or you don't own it!");
+                        }
+                    }
+                    else
+                    {
+                        if (Tag.List().Contains(command.ToLower()))
+                        {
+                            Tag t = Tag.Get(command.ToLower());
+                            DiscordUser owner = await _client.GetUser(t.owner.ToString());
+                            DiscordEmbed embed = new DiscordEmbed()
                             {
-                                await e.Message.Respond("No such tag!");
-                            }
+                                Title = "**Tag name: " + t.name + "**",
+                                Description = t.text,
+                                Author = new DiscordEmbedAuthor()
+                                {
+                                    Name = "Author: " + owner.Username + "#" + owner.Discriminator,
+                                    IconUrl = owner.AvatarUrl
+                                },
+                            };
+                            embed.Image = new DiscordEmbedImage()
+                            {
+                                Url = t.attachment
+                            };
+                            await e.Message.Respond("", embed: embed);
                         }
                     }
                 }

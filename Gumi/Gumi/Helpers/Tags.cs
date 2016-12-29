@@ -11,16 +11,18 @@ namespace Gumi.Helpers
 {
     public class Tag
     {
-        public static bool Create(ulong owner, ulong guild, string name, string text)
+        public static bool Create(ulong owner, ulong guild, string name, string text, string attachment)
         {
             JObject j = JObject.Parse(File.ReadAllText("tags.json"));
-            if (j[name] == null)
+            if (j[name] == null || j[name][owner].ToString() == owner.ToString())
             {
+                Remove(name, owner);
                 j.Add(name, new JObject()
                 {
                     {"owner", owner},
                     {"guild", guild},
-                    {"text", text}
+                    {"text", text},
+                    { "attachment", attachment }
                 });
                 File.WriteAllText("tags.json", j.ToString());
                 return true;
@@ -41,7 +43,8 @@ namespace Gumi.Helpers
                     name = name,
                     text = tag["text"].ToString(),
                     owner = ulong.Parse(tag["owner"].ToString()),
-                    guild = ulong.Parse(tag["guild"].ToString())
+                    guild = ulong.Parse(tag["guild"].ToString()),
+                    attachment = tag["attachment"].ToString()
                 };
             }
             else
@@ -54,14 +57,36 @@ namespace Gumi.Helpers
             return result;
         }
 
-        public static void Remove()
+        public static List<string> List()
         {
+            List<string> taglist = new List<string>();
+            JObject j = JObject.Parse(File.ReadAllText("tags.json"));
+            foreach(var t in j)
+            {
+                taglist.Add(t.Key);
+            }
+            return taglist;
+        }
 
+        public static bool Remove(string name, ulong user)
+        {
+            JObject j = JObject.Parse(File.ReadAllText("tags.json"));
+            if (j[name] != null)
+            {
+                if(j[name]["owner"].ToString() == user.ToString())
+                {
+                    j.Remove(name);
+                    File.WriteAllText("tags.json", j.ToString());
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool exists;
         public string name;
         public string text;
+        public string attachment;
         public ulong owner;
         public ulong guild;
     }
