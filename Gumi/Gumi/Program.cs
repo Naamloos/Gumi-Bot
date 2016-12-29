@@ -89,28 +89,55 @@ namespace Gumi
                     }
                     else if (command.StartsWith("tag "))
                     {
+                        // I call this: if-statement frankenstein!
                         string name = command.Substring(4);
-                        if(name.StartsWith("create "))
+                        if (name.StartsWith("create "))
                         {
-                            string newname = name.Substring(7).Split(' ')[0];
-                            string text = name.Substring(7 + newname.Length + 1);
-                            Tag.Create(e.Message.Author.ID, e.Guild.ID, newname, text);
-                            await e.Message.Respond("Tag created! (" + newname + ").");
-                        }else
+                            if (name.Length > 7)
+                            {
+                                string newname = name.Substring(7).Split(' ')[0];
+                                if (name.Substring(7 + newname.Length) != "")
+                                {
+                                    string text = name.Substring(7 + newname.Length + 1);
+                                    if (Tag.Create(e.Message.Author.ID, e.Guild.ID, newname, text))
+                                    {
+                                        await e.Message.Respond("Tag created! (" + newname + ").");
+                                    }
+                                    else
+                                    {
+                                        await e.Message.Respond("Tag already exists! (" + newname + ").");
+                                    }
+                                }else
+                                {
+                                    await e.Message.Respond("Invalid arguments!");
+                                }
+                            }else
+                            {
+                                await e.Message.Respond("Invalid arguments!");
+                            }
+                        }
+                        else
                         {
                             Tag t = Helpers.Tag.Get(name);
-                            DiscordUser owner = await _client.GetUser(t.owner.ToString());
-                            DiscordEmbed embed = new DiscordEmbed()
+                            if (t.exists)
                             {
-                                Title = "**Tag name: " + t.name + "**",
-                                Description = t.text,
-                                Author = new DiscordEmbedAuthor()
+                                DiscordUser owner = await _client.GetUser(t.owner.ToString());
+                                DiscordEmbed embed = new DiscordEmbed()
                                 {
-                                    Name = owner.Username + "#" + owner.Discriminator,
-                                    IconUrl = owner.AvatarUrl
-                                }
-                            };
-                            await e.Message.Respond("", embed: embed);
+                                    Title = "**Tag name: " + t.name + "**",
+                                    Description = t.text,
+                                    Author = new DiscordEmbedAuthor()
+                                    {
+                                        Name = owner.Username + "#" + owner.Discriminator,
+                                        IconUrl = owner.AvatarUrl
+                                    }
+                                };
+                                await e.Message.Respond("", embed: embed);
+                            }
+                            else
+                            {
+                                await e.Message.Respond("No such tag!");
+                            }
                         }
                     }
                 }

@@ -11,23 +11,28 @@ namespace Gumi.Helpers
 {
     public class Tag
     {
-        public static void Create(ulong owner, ulong guild, string name, string text)
+        public static bool Create(ulong owner, ulong guild, string name, string text)
         {
             JObject j = JObject.Parse(File.ReadAllText("tags.json"));
-            j.Add(name, new JObject()
+            if (j[name] == null)
             {
-                {"owner", owner},
-                {"guild", guild},
-                {"text", text}
-            });
-            File.WriteAllText("tags.json", j.ToString());
+                j.Add(name, new JObject()
+                {
+                    {"owner", owner},
+                    {"guild", guild},
+                    {"text", text}
+                });
+                File.WriteAllText("tags.json", j.ToString());
+                return true;
+            }
+            return false;
         }
 
         public static Tag Get(string name)
         {
             Tag result;
             JObject j = JObject.Parse(File.ReadAllText("tags.json"));
-            if(j[name] != null)
+            if (j[name] != null)
             {
                 JObject tag = (JObject)j[name];
                 result = new Tag()
@@ -38,7 +43,8 @@ namespace Gumi.Helpers
                     owner = ulong.Parse(tag["owner"].ToString()),
                     guild = ulong.Parse(tag["guild"].ToString())
                 };
-            }else
+            }
+            else
             {
                 result = new Tag()
                 {
