@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="DSharpPlus, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SharpCord\DSharpPlus\DSharpPlus\bin\Debug\DSharpPlus.dll</HintPath>
+      <HintPath>..\..\..\DSharpPlus\DSharpPlus\bin\Debug\DSharpPlus.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -43,7 +43,7 @@
     </Reference>
     <Reference Include="Sodium, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SharpCord\DSharpPlus\DSharpPlus\bin\Debug\Sodium.dll</HintPath>
+      <HintPath>..\..\..\DSharpPlus\DSharpPlus\bin\Debug\Sodium.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -55,7 +55,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="websocket-sharp, Version=1.0.2.59611, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SharpCord\DSharpPlus\DSharpPlus\bin\Debug\websocket-sharp.dll</HintPath>
+      <HintPath>..\..\..\DSharpPlus\DSharpPlus\bin\Debug\websocket-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

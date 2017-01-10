@@ -200,7 +200,7 @@ namespace Gumi
                 }
             };
 
-            _client.Connect();
+            _client.Connect(0);
             Console.ReadKey();
         }
     }
