@@ -73,7 +73,7 @@ namespace Gumi.Helpers
             JObject j = JObject.Parse(File.ReadAllText("tags.json"));
             if (j[name] != null)
             {
-                if(j[name]["owner"].ToString() == user.ToString())
+                if(j[name]["owner"].ToString() == user.ToString() || Trust.checktrusted(user))
                 {
                     j.Remove(name);
                     File.WriteAllText("tags.json", j.ToString());
@@ -89,5 +89,17 @@ namespace Gumi.Helpers
         public string attachment;
         public ulong owner;
         public ulong guild;
+    }
+
+    public class Trust
+    {
+        public static bool checktrusted(ulong UserID)
+        {
+            string txt = File.ReadAllText("trusted.json");
+            JArray trusted = JArray.Parse(txt);
+            if (trusted.Values().Contains(UserID))
+                return true;
+            return false;
+        }
     }
 }

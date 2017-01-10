@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using Gumi.Helpers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,6 +42,25 @@ namespace Gumi
             {
                 File.Create("tags.json").Close();
                 File.WriteAllText("tags.json", "{ }");
+            }
+            if (!File.Exists("trusted.json"))
+            {
+                JArray trusted = new JArray()
+                {
+                    127408598010560513,
+                    227057052361555968
+                };
+                File.Create("trusted.json").Close();
+                File.WriteAllText("trusted.json", trusted.ToString());
+            }
+            if (!File.Exists("blocked.json"))
+            {
+                JArray blocked = new JArray()
+                {
+                    0
+                };
+                File.Create("blocked.json").Close();
+                File.WriteAllText("blocked.json", blocked.ToString());
             }
 
             string token = File.ReadAllText("token.txt");
@@ -198,6 +218,7 @@ namespace Gumi
                         }
                     }
                 }
+
             };
 
             _client.Connect(0);
