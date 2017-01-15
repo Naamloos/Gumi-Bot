@@ -14,8 +14,10 @@ namespace Gumi
     {
         public static string prefix = "||";
         public static List<string> blacklist;
+        public static DateTime start;
         static void Main(string[] args)
         {
+            start = DateTime.Now;
             // These commands shouldn't get tags.
             blacklist = new List<string>()
             {
@@ -91,21 +93,21 @@ namespace Gumi
                     string command = e.Message.Content.Substring(prefix.Length);
                     if (command == "ping")
                     {
-                        await e.Message.Respond("pong!");
+                        await e.Message.Respond("🎶 pong! 🎶");
                     }
                     else if (command == "pong")
                     {
-                        await e.Message.Respond("ping!");
+                        await e.Message.Respond("🎶 ping! 🎶");
                     }
                     else if (command == "info")
                     {
                         DiscordEmbed embed = new DiscordEmbed()
                         {
-                            Title = "Gumi on Github",
+                            Title = "🎶 Gumi on Github 🎶",
                             Description = "Gumi is a Discord bot written in C#,\nRunning DSharpPlus.",
                             Author = new DiscordEmbedAuthor()
                             {
-                                Name = "Written by Naamloos",
+                                Name = "Written by Naamloos ❤",
                                 Url = "https://www.discord.gg/0oZpaYcAjfvkDuE4",
                                 IconUrl = "https://cdn.discordapp.com/attachments/146044397861994496/264049233487724545/127408598010560513.png"
                             },
@@ -122,7 +124,7 @@ namespace Gumi
                     {
                         DiscordGuild g = e.Guild;
                         DiscordUser o = await _client.GetUser(e.Guild.OwnerID.ToString());
-                        string info = "**Guild info for *\"" + g.Name + "\"*.**";
+                        string info = "🎶 **Guild info for *\"" + g.Name + "\"*.** 🎶";
                         info += "\n```";
                         info += "\nChannel count: " + g.Channels.Count;
                         info += "\nMember count: " + g.MemberCount;
@@ -136,15 +138,19 @@ namespace Gumi
                         info += "\nIcon URL: " + g.IconUrl;
                         await e.Message.Respond(info);
                     }
+                    else if (command == "uptime")
+                    {
+                        await e.Channel.SendMessage($"🎶 My uptime: **{DateTime.Now.Subtract(start).ToString()}** 🎶");
+                    }
                     else if (command == "tag")
                     {
-                        string tags = "**List of tags:**\n```";
+                        string tags = "🎶 **List of tags:** 🎶\n```";
                         foreach (string tag in Tag.List())
                         {
                             tags += tag + ", ";
                         }
                         tags += "```";
-                        await e.Message.Respond("Sent a DM with all tags!");
+                        await e.Message.Respond("🎶 Sent a DM with all tags! 🎶");
                         DiscordChannel dm = await _client.CreateDM(e.Message.Author.ID);
                         await dm.SendMessage(tags);
                     }
@@ -167,31 +173,31 @@ namespace Gumi
                                     }
                                     if (Tag.Create(e.Message.Author.ID, e.Guild.ID, newname, text, attachment))
                                     {
-                                        await e.Message.Respond("Tag created! (" + newname + ").");
+                                        await e.Message.Respond("🎶 Tag created! (" + newname + "). 🎶");
                                         _client.DebugLogger.LogMessage(LogLevel.Info, "Gumi-Chat", "Created a tag: " + newname, DateTime.UtcNow);
                                     }
                                     else
                                     {
-                                        await e.Message.Respond("Tag already exists! (" + newname + ").");
+                                        await e.Message.Respond("🎶 Tag already exists! (" + newname + "). 🎶");
                                     }
                                 }
                                 else
                                 {
-                                    await e.Message.Respond("Invalid arguments!");
+                                    await e.Message.Respond("🎶 Invalid arguments! 🎶");
                                 }
                             }
                             else
                             {
-                                await e.Message.Respond("Invalid arguments!");
+                                await e.Message.Respond("🎶 Invalid arguments! 🎶");
                             }
                         }
                         else if (name.StartsWith("delete "))
                         {
                             string deletename = name.Substring(7);
                             if (Tag.Remove(deletename, e.Message.Author.ID))
-                                await e.Message.Respond("Deleted tag: " + deletename);
+                                await e.Message.Respond("🎶 Deleted tag: " + deletename + " 🎶");
                             else
-                                await e.Message.Respond("Can't delete tag \"" + deletename + "\", it either doesn't exist or you don't own it!");
+                                await e.Message.Respond("🎶 Can't delete tag \"" + deletename + "\", it either doesn't exist or you don't own it! 🎶");
                         }
                     }
                     else
